@@ -16,6 +16,7 @@ class Tarefa(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(100), nullable=False)
     descricao = db.Column(db.String(200), nullable=True)
+    notificacao = db.Column(db.DateTime, nullable=False)
 
 # Criando a estrutura do banco de dados
 with app.app_context():
@@ -25,11 +26,11 @@ with app.app_context():
 class TarefasResource(Resource):
     def get(self):
         tarefas = Tarefa.query.all()
-        return jsonify([{"id": t.id, "titulo": t.titulo, "descricao": t.descricao} for t in tarefas])
+        return jsonify([{"id": t.id, "titulo": t.titulo, "descricao": t.descricao, "notificacao": t.notificacao} for t in tarefas])
 
     def post(self):
         dados = request.get_json()
-        nova_tarefa = Tarefa(titulo=dados["titulo"], descricao=dados.get("descricao", ""))
+        nova_tarefa = Tarefa(titulo=dados["titulo"], descricao=dados.get("descricao", ""), notificao = dados["notificacao"])
         db.session.add(nova_tarefa)
         db.session.commit()
         return jsonify({"mensagem": "Tarefa adicionada com sucesso!"})
@@ -38,7 +39,7 @@ class TarefaResource(Resource):
     def get(self, id):
         tarefa = Tarefa.query.get(id)
         if tarefa:
-            return jsonify({"id": tarefa.id, "titulo": tarefa.titulo, "descricao": tarefa.descricao})
+            return jsonify({"id": tarefa.id, "titulo": tarefa.titulo, "descricao": tarefa.descricao, "notificacao": tarefa.notificacao})
         return jsonify({"erro": "Tarefa não encontrada"}), 404
 
     def delete(self, id):
