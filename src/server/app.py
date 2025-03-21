@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api, Resource
+from datetime import datetime
 
 # Inicializando o App Flask
 app = Flask(__name__)
@@ -30,7 +31,7 @@ class TarefasResource(Resource):
 
     def post(self):
         dados = request.get_json()
-        nova_tarefa = Tarefa(titulo=dados["titulo"], descricao=dados.get("descricao", ""), notificao = dados["notificacao"])
+        nova_tarefa = Tarefa(titulo=dados["titulo"], descricao=dados.get("descricao", ""), notificacao = datetime.fromisoformat(dados["notificacao"]))
         db.session.add(nova_tarefa)
         db.session.commit()
         return jsonify({"mensagem": "Tarefa adicionada com sucesso!"})
